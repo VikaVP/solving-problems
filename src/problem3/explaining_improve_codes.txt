@@ -1,0 +1,46 @@
+Line 4 (interface WalletBalance):
+- We can add => blockchain: string;
+  into this interface because the key is needed and used in other function.
+
+Line 7 (interface FormattedWalletBalance):
+- We can remove these keys from the interface :
+    currency: string;
+    amount: number;
+  Because the keys and type values are same with interface WalletBalance, so we can avoid redundant code. While we can use 'extends' keyword to interface FormattedWalletBalance for using the exact keys and type values above.
+  The code will be like this:
+  interface FormattedWalletBalance extends WalletBalance {
+    formatted: string;
+  }
+
+Interface Props:
+- Because this interface just extend interface BoxProps only and there are no additional key, we can remove the code to avoid unnecessary code.
+
+Line 11 (function getPriority):
+- Function getPriority doesn't use any local state in the parent function. So, we can move the function to outside the parent function or new file. In this case, we make this function modular and can be used by another component or function.
+- parameter blockchain must has spesific type, because the case is clear using string, we can define blockchain is string.
+
+Line 27 (Wallet Function Component):
+- Replace interface Props with interface BoxProps, because that interface already deleted.
+
+Line 28:
+- The codes :
+    const { children, ...rest } = props;
+  We can remove the code above because the children and ...rest are not used in the entire code, so we can simplify our code to be clean and tidy.
+
+Line 32 (function sortedBalances) :
+- The filter function of balances array has falsy checker. The filter is for filtering the data which has amount to render in the view, we don't need check for the priority in here because the sort function will handle that after this. So, we can remove unnecessary codes as this: 
+  balances.filter((balance: WalletBalance) => balance.amount > 0);
+- The sort function for sorting filtered balances data has redundant code, we can simplify the code, because for descending sorting (from highest priority to lowest priority) we just need to check if the right position is higher than the left or not, we need to check when the value of right minus the left value resulting positif value then the right position will replace the left position. The code will be as this:
+  balances.filter((balance: WalletBalance) => balance.amount > 0)
+          .sort((lhs: WalletBalance, rhs: WalletBalance) => 
+            getPriority(rhs.blockchain) - getPriority(lhs.blockchain)
+          )
+
+Line 46 (function rows):
+- In this function, we need use formatted value of balance amount to render WalletRow component. So we don't need the sortedBalances value but the formattedBalances.
+
+Line 60 :
+- {...rest} used on div tag must be replaced with {...props} because the rest variable is not exist anymore in the parent Function component and avoid code error. The code will be like this:
+  <div {...props}>
+    {rows}
+  </div>
